@@ -1,0 +1,10 @@
+<GetDashboardResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <GetDashboardResult>
+    <DashboardArn>arn:aws:cloudwatch::123456789012:dashboard/test-awscr-20260915-dashboard</DashboardArn>
+    <DashboardBody>{&quot;widgets&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;x&quot;:0,&quot;y&quot;:0,&quot;width&quot;:6,&quot;height&quot;:3,&quot;properties&quot;:{&quot;markdown&quot;:&quot;# test&quot;}}]}</DashboardBody>
+    <DashboardName>test-awscr-20260915-dashboard</DashboardName>
+  </GetDashboardResult>
+  <ResponseMetadata>
+    <RequestId>2465638b-37c8-4d70-99e8-43d1792e34f3</RequestId>
+  </ResponseMetadata>
+</GetDashboardResponse>

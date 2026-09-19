@@ -1,0 +1,25 @@
+<DescribeAlarmHistoryResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <DescribeAlarmHistoryResult>
+    <AlarmHistoryItems>
+      <member>
+        <AlarmType>MetricAlarm</AlarmType>
+        <HistorySummary>Alarm updated from INSUFFICIENT_DATA to ALARM</HistorySummary>
+        <HistoryItemType>StateUpdate</HistoryItemType>
+        <AlarmName>test-awscr-20260915-alarm</AlarmName>
+        <HistoryData>{&quot;version&quot;:&quot;1.0&quot;,&quot;oldState&quot;:{&quot;stateValue&quot;:&quot;INSUFFICIENT_DATA&quot;,&quot;stateReason&quot;:&quot;Unchecked: Initial alarm creation&quot;},&quot;newState&quot;:{&quot;stateValue&quot;:&quot;ALARM&quot;,&quot;stateReason&quot;:&quot;testing&quot;,&quot;stateReasonData&quot;:{&quot;k&quot;:1}}}</HistoryData>
+        <Timestamp>2026-09-15T19:00:37.543Z</Timestamp>
+      </member>
+      <member>
+        <AlarmType>MetricAlarm</AlarmType>
+        <HistorySummary>Alarm &quot;test-awscr-20260915-alarm&quot; created</HistorySummary>
+        <HistoryItemType>ConfigurationUpdate</HistoryItemType>
+        <AlarmName>test-awscr-20260915-alarm</AlarmName>
+        <HistoryData>{&quot;version&quot;:&quot;1.0&quot;,&quot;type&quot;:&quot;Create&quot;,&quot;createdAlarm&quot;:{&quot;alarmName&quot;:&quot;test-awscr-20260915-alarm&quot;,&quot;alarmDescription&quot;:&quot;test alarm&quot;,&quot;alarmArn&quot;:&quot;arn:aws:cloudwatch:us-east-1:123456789012:alarm:test-awscr-20260915-alarm&quot;,&quot;alarmConfigurationUpdatedTimestamp&quot;:&quot;2026-09-15T19:00:36.329+0000&quot;,&quot;namespace&quot;:&quot;test-awscr-20260915&quot;,&quot;metricName&quot;:&quot;Requests&quot;,&quot;extendedStatistic&quot;:&quot;SUM&quot;,&quot;period&quot;:60,&quot;unit&quot;:&quot;Count&quot;,&quot;dimensions&quot;:[{&quot;value&quot;:&quot;test&quot;,&quot;name&quot;:&quot;Env&quot;}],&quot;threshold&quot;:100.5,&quot;comparisonOperator&quot;:&quot;GreaterThanThreshold&quot;,&quot;evaluationPeriods&quot;:2,&quot;datapointsToAlarm&quot;:1,&quot;treatMissingData&quot;:&quot;notBreaching&quot;,&quot;stateValue&quot;:&quot;INSUFFICIENT_DATA&quot;,&quot;stateUpdatedTimestamp&quot;:&quot;2026-09-15T19:00:36.329+0000&quot;,&quot;actionsEnabled&quot;:false,&quot;alarmActions&quot;:[],&quot;insufficientDataActions&quot;:[],&quot;okactions&quot;:[]}}</HistoryData>
+        <Timestamp>2026-09-15T19:00:36.330Z</Timestamp>
+      </member>
+    </AlarmHistoryItems>
+  </DescribeAlarmHistoryResult>
+  <ResponseMetadata>
+    <RequestId>2c3046db-ad8b-4ad8-8e61-4170c6be6e50</RequestId>
+  </ResponseMetadata>
+</DescribeAlarmHistoryResponse>

@@ -1,0 +1,8 @@
+<ErrorResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>MissingParameter</Code>
+    <Message>At least one MetricDatum object must be present in the request.</Message>
+  </Error>
+  <RequestId>e77e02a6-3d9d-4bf7-a010-a4ea04ef1a52</RequestId>
+</ErrorResponse>

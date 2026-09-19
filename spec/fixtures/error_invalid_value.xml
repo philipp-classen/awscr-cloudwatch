@@ -1,0 +1,8 @@
+<ErrorResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>InvalidParameterValue</Code>
+    <Message>The value NaN for parameter MetricData.member.1.Value is invalid.</Message>
+  </Error>
+  <RequestId>3bce2626-6128-46bd-b6aa-a22368ac2f02</RequestId>
+</ErrorResponse>

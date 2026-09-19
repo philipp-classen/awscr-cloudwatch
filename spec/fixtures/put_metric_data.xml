@@ -1,0 +1,5 @@
+<PutMetricDataResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <ResponseMetadata>
+    <RequestId>c8323e36-52ea-41cf-814a-3cf6871832e5</RequestId>
+  </ResponseMetadata>
+</PutMetricDataResponse>

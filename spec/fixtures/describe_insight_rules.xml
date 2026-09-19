@@ -1,0 +1,8 @@
+<DescribeInsightRulesResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <DescribeInsightRulesResult>
+    <InsightRules/>
+  </DescribeInsightRulesResult>
+  <ResponseMetadata>
+    <RequestId>044a2948-150c-484a-b2bf-2a7a297a9767</RequestId>
+  </ResponseMetadata>
+</DescribeInsightRulesResponse>

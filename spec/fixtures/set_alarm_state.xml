@@ -1,0 +1,5 @@
+<SetAlarmStateResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <ResponseMetadata>
+    <RequestId>3da9b43e-a4ff-4f69-a441-9719a3f3c75c</RequestId>
+  </ResponseMetadata>
+</SetAlarmStateResponse>

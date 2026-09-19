@@ -1,0 +1,28 @@
+<DescribeAlarmsResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <DescribeAlarmsResult>
+    <LogAlarms/>
+    <CompositeAlarms>
+      <member>
+        <AlarmConfigurationUpdatedTimestamp>2026-09-15T19:14:14.015Z</AlarmConfigurationUpdatedTimestamp>
+        <StateValue>OK</StateValue>
+        <AlarmName>test-awscr-20260915-composite</AlarmName>
+        <StateReason>arn:aws:cloudwatch:us-east-1:123456789012:alarm:test-awscr-20260915-composite was created and its alarm rule evaluates to OK</StateReason>
+        <InsufficientDataActions/>
+        <AlarmDescription>composite test</AlarmDescription>
+        <StateReasonData>{&quot;triggeringAlarms&quot;:[{&quot;arn&quot;:&quot;arn:aws:cloudwatch:us-east-1:123456789012:alarm:test-awscr-20260915-alarm&quot;,&quot;state&quot;:{&quot;value&quot;:&quot;INSUFFICIENT_DATA&quot;,&quot;timestamp&quot;:&quot;2026-09-15T19:14:11.716+0000&quot;}}]}</StateReasonData>
+        <ActionsEnabled>false</ActionsEnabled>
+        <AlarmRule>ALARM(&quot;test-awscr-20260915-alarm&quot;)</AlarmRule>
+        <StateTransitionedTimestamp>2026-09-15T19:14:14.015Z</StateTransitionedTimestamp>
+        <CreationId>2930b504-6486-45fd-8dfd-8ff83ea86a90/1234567890123</CreationId>
+        <OKActions/>
+        <AlarmActions/>
+        <AlarmArn>arn:aws:cloudwatch:us-east-1:123456789012:alarm:test-awscr-20260915-composite</AlarmArn>
+        <StateUpdatedTimestamp>2026-09-15T19:14:14.015Z</StateUpdatedTimestamp>
+      </member>
+    </CompositeAlarms>
+    <MetricAlarms/>
+  </DescribeAlarmsResult>
+  <ResponseMetadata>
+    <RequestId>13d09760-a3d2-44c6-9a78-a99b959966ef</RequestId>
+  </ResponseMetadata>
+</DescribeAlarmsResponse>

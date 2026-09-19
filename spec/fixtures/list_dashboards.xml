@@ -1,0 +1,15 @@
+<ListDashboardsResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <ListDashboardsResult>
+    <DashboardEntries>
+      <member>
+        <DashboardArn>arn:aws:cloudwatch::123456789012:dashboard/test-awscr-20260915-dashboard</DashboardArn>
+        <Size>134</Size>
+        <LastModified>2026-09-15T19:14:18Z</LastModified>
+        <DashboardName>test-awscr-20260915-dashboard</DashboardName>
+      </member>
+    </DashboardEntries>
+  </ListDashboardsResult>
+  <ResponseMetadata>
+    <RequestId>a39056a2-03a7-4981-aef5-d8db21b62083</RequestId>
+  </ResponseMetadata>
+</ListDashboardsResponse>

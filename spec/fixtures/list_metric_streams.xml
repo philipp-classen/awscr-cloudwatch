@@ -1,0 +1,8 @@
+<ListMetricStreamsResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <ListMetricStreamsResult>
+    <Entries/>
+  </ListMetricStreamsResult>
+  <ResponseMetadata>
+    <RequestId>c59864f1-29dd-42ec-93c7-bdcceb6a01ec</RequestId>
+  </ResponseMetadata>
+</ListMetricStreamsResponse>

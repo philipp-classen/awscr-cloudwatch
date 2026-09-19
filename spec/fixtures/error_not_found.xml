@@ -1,0 +1,7 @@
+<ErrorResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>ResourceNotFound</Code>
+  </Error>
+  <RequestId>87a86cc6-6d4e-45a9-a640-ee6a5e9b7330</RequestId>
+</ErrorResponse>

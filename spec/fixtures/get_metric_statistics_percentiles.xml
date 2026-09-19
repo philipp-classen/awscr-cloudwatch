@@ -1,0 +1,25 @@
+<GetMetricStatisticsResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <GetMetricStatisticsResult>
+    <Datapoints>
+      <member>
+        <SampleCount>3.0</SampleCount>
+        <ExtendedStatistics>
+          <entry>
+            <key>p99</key>
+            <value>2.1234567890127626</value>
+          </entry>
+          <entry>
+            <key>p50</key>
+            <value>1.123456789012321</value>
+          </entry>
+        </ExtendedStatistics>
+        <Unit>Milliseconds</Unit>
+        <Timestamp>2026-09-15T18:59:00Z</Timestamp>
+      </member>
+    </Datapoints>
+    <Label>Latency</Label>
+  </GetMetricStatisticsResult>
+  <ResponseMetadata>
+    <RequestId>80ed129a-74dd-4019-9202-f4992b34315b</RequestId>
+  </ResponseMetadata>
+</GetMetricStatisticsResponse>

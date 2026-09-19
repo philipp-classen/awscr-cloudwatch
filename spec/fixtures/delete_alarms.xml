@@ -1,0 +1,5 @@
+<DeleteAlarmsResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <ResponseMetadata>
+    <RequestId>d4bddbd3-c4d5-4976-a115-6c1b3ac22767</RequestId>
+  </ResponseMetadata>
+</DeleteAlarmsResponse>

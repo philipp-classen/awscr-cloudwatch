@@ -1,0 +1,8 @@
+<ErrorResponse xmlns="http://webservices.amazon.com/AWSFault/2005-15-09">
+  <Error>
+    <Type>Sender</Type>
+    <Code>InvalidAction</Code>
+    <Message>Could not find operation NoSuchAction for version 2010-08-01</Message>
+  </Error>
+  <RequestId>bfd984dd-6a89-4ab3-a3cc-4ecf47228768</RequestId>
+</ErrorResponse>

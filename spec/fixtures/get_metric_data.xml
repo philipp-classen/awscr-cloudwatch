@@ -1,0 +1,30 @@
+<GetMetricDataResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <GetMetricDataResult>
+    <MetricDataResults>
+      <member>
+        <Timestamps/>
+        <Values/>
+        <Id>m1</Id>
+        <Label>Requests</Label>
+        <StatusCode>PartialData</StatusCode>
+      </member>
+      <member>
+        <Timestamps/>
+        <Values/>
+        <Messages>
+          <member>
+            <Code>PartialData</Code>
+            <Value>The expression may contain partial data as one or more metrics have StatusCode 'Paginated'</Value>
+          </member>
+        </Messages>
+        <Id>e1</Id>
+        <Label>Doubled</Label>
+        <StatusCode>PartialData</StatusCode>
+      </member>
+    </MetricDataResults>
+    <Messages/>
+  </GetMetricDataResult>
+  <ResponseMetadata>
+    <RequestId>784455f1-e3fb-4d74-8cb3-a176036da7bd</RequestId>
+  </ResponseMetadata>
+</GetMetricDataResponse>

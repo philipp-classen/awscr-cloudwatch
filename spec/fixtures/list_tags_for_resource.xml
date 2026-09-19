@@ -1,0 +1,17 @@
+<ListTagsForResourceResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
+  <ListTagsForResourceResult>
+    <Tags>
+      <member>
+        <Value>test</Value>
+        <Key>env</Key>
+      </member>
+      <member>
+        <Value>core</Value>
+        <Key>team</Key>
+      </member>
+    </Tags>
+  </ListTagsForResourceResult>
+  <ResponseMetadata>
+    <RequestId>b8391c88-73d9-42d7-a86d-3056938c179a</RequestId>
+  </ResponseMetadata>
+</ListTagsForResourceResponse>

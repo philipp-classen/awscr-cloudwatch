@@ -1,0 +1,8 @@
+Naming/BlockParameterName:
+  Enabled: false
+
+Documentation/DocumentationAdmonition:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false

@@ -1,0 +1,20 @@
+name: awscr-cloudwatch
+version: 0.1.0
+description: Low-level client for AWS CloudWatch metrics and alarms
+
+authors:
+  - Philipp Claßen <philipp.classen@posteo.de>
+
+dependencies:
+  awscr-signer:
+    github: taylorfinnell/awscr-signer
+    version: ~> 0.9.0
+
+crystal: '>= 1.18.2'
+
+license: MIT
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 1.6.0
