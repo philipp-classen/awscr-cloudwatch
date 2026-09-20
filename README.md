@@ -5,8 +5,8 @@ A low-level Crystal client for AWS CloudWatch:
 1. Metrics: publish counters and other data points, query statistics
 2. Alarms: create, inspect and delete metric and composite alarms
 
-Dashboards, anomaly detectors, tags, metric streams and Contributor Insights
-rules are covered as well, but with less testing (see "Status").
+Dashboards, anomaly detectors, tags, metric streams and Contributor Insights rules are
+covered as well, but with less testing and should be considered experimental only.
 
 ## Installation
 
@@ -46,13 +46,9 @@ metrics.put_metric_data("MyApp", [
 ])
 ```
 
-Metric names, namespaces and dimensions must be ASCII. Calls return `nil` on
-success and raise `Awscr::CloudWatch::Exception` when AWS rejects the request. The exception carries the AWS error `code` (for example
-`InvalidParameterValue`), the `request_id` and the HTTP `status`. Throttling,
-5xx responses and connection errors are retried with exponential backoff
-(`max_attempts: 3` by default). CloudWatch has no idempotency token, so a
-retry after a timeout can store a data point twice; every SDK shares that
-property.
+Calls return `nil` on success and raise `Awscr::CloudWatch::Exception` when AWS
+rejects the request. Throttling, 5xx responses and connection errors are
+retried with exponential backoff (`max_attempts: 3` by default).
 
 ### Querying metrics
 
@@ -112,22 +108,31 @@ crystal spec
 bin/ameba
 ```
 
-The fake server verifies every SigV4 signature. The unit specs also cover
-malformed HTTP, fuzzed response bodies and resource leaks.
-
-Integration specs run against a real account (or a mock via `AWS_ENDPOINT_URL`):
+Integration specs only run with `AWSCR_CLOUDWATCH_INTEGRATION=1`. Against a
+local mock such as Ministack (which does not fully conform to the AWS API,
+so just the basic specs pass: uploads, dashboards, connection reuse):
 
 ```
-export AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... AWS_REGION=us-east-1
-AWSCR_CLOUDWATCH_INTEGRATION=1 AWSCR_CLOUDWATCH_TEST_PREFIX=my-test crystal spec spec/integration
+export AWS_ENDPOINT_URL=http://localhost:4566
+export AWSCR_CLOUDWATCH_INTEGRATION=1
+
+crystal spec spec/integration
 ```
 
-Be careful when running tests again a real account. Do it at your own risk only.
+Against a real account:
 
-The tests create alarms, a dashboard and an anomaly detector under the prefix and
-delete them again. Published metrics cannot be deleted (they expire after 15
-months). The specs expect real AWS behaviour. Ministack passes only the basic
-ones (uploads, dashboards, connection reuse).
+```
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=us-east-1
+AWSCR_CLOUDWATCH_INTEGRATION=1
+AWSCR_CLOUDWATCH_TEST_PREFIX=my-test
+
+crystal spec spec/integration
+```
+
+Be careful: this creates alarms, a dashboard and an anomaly detector under the
+test prefix, and published metrics cannot be deleted.
 
 ## Contributing
 

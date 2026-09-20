@@ -54,6 +54,23 @@ describe CW::Http do
     end
   end
 
+  it "raises ExpiredTokenException for expired session tokens" do
+    CW::Spec.with_fake_server do |server|
+      server.reply(CW::Spec.fixture("error_expired_token"), 403)
+      ex = expect_raises(CW::ExpiredTokenException, "ExpiredTokenException: The security token included in the request has expired. Request a new security token and try again.") do
+        CW::Spec.metric_client(server).list_metrics
+      end
+      ex.code.should eq "ExpiredTokenException"
+      ex.status.should eq HTTP::Status::FORBIDDEN
+      ex.retryable?.should be_false
+      server.requests.size.should eq 1 # callers refresh instead of retrying
+
+      # STS reports the same condition as "ExpiredToken".
+      server.reply(CW::Spec.fixture("error_expired_token").sub("ExpiredTokenException", "ExpiredToken"), 403)
+      expect_raises(CW::ExpiredTokenException) { CW::Spec.metric_client(server).list_metrics }
+    end
+  end
+
   it "parses errors from the generic AWS fault namespace" do
     CW::Spec.with_fake_server do |server|
       server.reply(CW::Spec.fixture("error_invalid_action"), 400)
@@ -233,7 +250,7 @@ describe CW::BaseClient do
   end
 
   it "rejects endpoints that are not URLs" do
-    ["localhost:4566", "monitoring.us-east-1.amazonaws.com", "http://", "ftp://x"].each do |endpoint|
+    {"localhost:4566", "monitoring.us-east-1.amazonaws.com", "http://", "ftp://x"}.each do |endpoint|
       expect_raises(ArgumentError, "endpoint must be a URL") { CW::MetricClient.new("us-east-1", "key", "secret", endpoint: endpoint) }
     end
   end

@@ -56,9 +56,10 @@ module Awscr::CloudWatch::Spec
 
   # Metric data becomes queryable a few seconds after publishing.
   def self.eventually(timeout : Time::Span = 2.minutes, & : -> Bool) : Nil
-    deadline = Time.monotonic + timeout
+    # TODO: replace by Time.instant (once Crystal >= 1.19 is widespread)
+    deadline = Time.utc + timeout
     until yield
-      raise "condition not met within #{timeout}" if Time.monotonic > deadline
+      raise "condition not met within #{timeout}" if Time.utc > deadline
       sleep 3.seconds
     end
   end
