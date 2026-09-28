@@ -5,6 +5,39 @@ private def client_for(server : CW::Spec::RawServer, max_attempts = 3)
   CW::MetricClient.new("us-east-1", "key", "secret", endpoint: server.endpoint, max_attempts: max_attempts)
 end
 
+private class PoolLikeFactory < CW::HttpClientFactory
+  getter created = 0
+
+  def initialize
+    @pooled = nil
+  end
+
+  def acquire_client(endpoint : URI) : HTTP::Client
+    if client = @pooled
+      @pooled = nil
+      return client
+    end
+    @created += 1
+    DiesWhileIdle.new(endpoint.host.not_nil!, endpoint.port)
+  end
+
+  def release(client : HTTP::Client?)
+    @pooled = client if client
+  end
+end
+
+# Succeeds on the first request, then fails like a connection that died
+# while idle: the next write fails with a broken pipe.
+private class DiesWhileIdle < HTTP::Client
+  @died = false
+
+  def exec(request : HTTP::Request) : HTTP::Client::Response
+    raise IO::Error.new("write (TCPSocket): Broken pipe") if @died
+    @died = true
+    HTTP::Client::Response.new(HTTP::Status::OK)
+  end
+end
+
 describe "malformed HTTP" do
   it "retries when the connection is closed without a response" do
     server = CW::Spec::RawServer.new([nil, nil, nil] of String?)
@@ -23,13 +56,13 @@ describe "malformed HTTP" do
   it "fails cleanly on a truncated body" do
     truncated = "HTTP/1.1 200 OK\r\nContent-Length: 1000\r\n\r\n<ListMetricsResponse>"
     server = CW::Spec::RawServer.new([truncated, truncated, truncated] of String?)
-    expect_raises(IO::Error | CW::Exception) { client_for(server).list_metrics }
+    expect_raises(IO::Error | CW::ApiException) { client_for(server).list_metrics }
     server.close
   end
 
   it "fails cleanly on garbage instead of HTTP" do
     server = CW::Spec::RawServer.new(Array(String?).new(3, "not http at all\r\n\r\n"))
-    expect_raises(IO::Error | CW::Exception) { client_for(server).list_metrics }
+    expect_raises(IO::Error | CW::ApiException) { client_for(server).list_metrics }
     server.close
   end
 
@@ -42,6 +75,16 @@ describe "malformed HTTP" do
   it "retries DNS failures" do
     client = CW::MetricClient.new("us-east-1", "key", "secret", endpoint: "http://awscr-cloudwatch.invalid", max_attempts: 2)
     expect_raises(IO::Error) { client.list_metrics }
+  end
+
+  it "opens a fresh connection when a pooled one died while idle" do
+    factory = PoolLikeFactory.new
+    client = CW::MetricClient.new("us-east-1", "key", "secret", endpoint: "http://127.0.0.1:1", client_factory: factory)
+
+    client.put_counter("ns", "first")  # the client is pooled afterwards
+    client.put_counter("ns", "second") # the pooled client died, so a retry must succeed with a fresh one
+
+    factory.created.should eq 2
   end
 end
 
@@ -83,7 +126,7 @@ describe "response parsing under fuzzing" do
           server.reply(variant)
           begin
             call.call(client)
-          rescue CW::Exception
+          rescue CW::ApiException
             # expected for broken input
           rescue ex
             fail "#{name}: #{ex.class} escaped for #{variant[0, 80].inspect}..."

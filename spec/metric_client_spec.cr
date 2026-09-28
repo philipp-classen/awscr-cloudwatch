@@ -47,7 +47,7 @@ describe CW::MetricClient do
     it "raises when AWS rejects the request" do
       with_metric_client do |client, server|
         server.reply(CW::Spec.fixture("error_missing_param"), 400)
-        ex = expect_raises(CW::Exception, "MissingParameter: At least one MetricDatum object must be present in the request.") do
+        ex = expect_raises(CW::ApiException, "MissingParameter: At least one MetricDatum object must be present in the request.") do
           client.put_metric_data("MyApp", [] of CW::MetricDatum)
         end
         ex.code.should eq "MissingParameter"

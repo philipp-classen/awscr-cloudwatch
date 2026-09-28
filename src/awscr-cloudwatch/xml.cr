@@ -52,7 +52,7 @@ module Awscr::CloudWatch
 
       # First element matching *query*. Raises if there is none.
       def first(query : String) : NamespacedNode
-        first?(query) || raise Awscr::CloudWatch::Exception.new("Missing element: #{query}")
+        first?(query) || raise ApiException.new("Missing element: #{query}")
       end
 
       # Parses `<query><member><key>..</key><value>..</value></member>...` into a Hash.
@@ -81,7 +81,7 @@ module Awscr::CloudWatch
     protected def self.parse(xml : String | IO) : ::XML::Node
       ::XML.parse(xml)
     rescue ex : ::XML::Error
-      raise Awscr::CloudWatch::Exception.new("Invalid XML: #{ex.message}")
+      raise ApiException.new("Invalid XML: #{ex.message}")
     end
 
     # :nodoc:

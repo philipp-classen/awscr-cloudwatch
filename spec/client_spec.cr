@@ -18,7 +18,7 @@ describe CW::Client do
       server.requests.map(&.headers["X-Amz-Security-Token"]).should eq ["token", "token"]
 
       server.reply("", 503)
-      expect_raises(CW::Exception, "HTTP 503") { client.alarms.delete_alarms(["old"]) }
+      expect_raises(CW::ApiException, "HTTP 503") { client.alarms.delete_alarms(["old"]) }
       server.requests.size.should eq 3
     end
   end

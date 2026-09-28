@@ -5,7 +5,7 @@ module Awscr::CloudWatch
   # Shared by `MetricClient` and `AlarmClient`: credentials, endpoint,
   # request execution and the tagging API.
   #
-  # Calls raise `Awscr::CloudWatch::Exception` when AWS rejects the request.
+  # Calls raise `Awscr::CloudWatch::ApiException` when AWS rejects the request.
   class BaseClient
     getter endpoint : URI
     getter region : String
@@ -64,7 +64,7 @@ module Awscr::CloudWatch
       begin
         output.from_response(resp)
       rescue ex : ArgumentError | Time::Format::Error | Base64::Error
-        raise Exception.new("Unexpected response: #{ex.message}", resp.status)
+        raise ApiException.new("Unexpected response: #{ex.message}", resp.status)
       end
     end
   end

@@ -8,6 +8,10 @@ A low-level Crystal client for AWS CloudWatch:
 Dashboards, anomaly detectors, tags, metric streams and Contributor Insights rules are
 covered as well, but with less testing and should be considered experimental only.
 
+For day-to-day use the [`easy-awscr`](https://github.com/philipp-classen/easy-awscr/)
+library is recommended. It handles credentials, connection pooling and provides
+higher-level APIs like aggregating counters before uploading them.
+
 ## Installation
 
 1. Add the dependency to your `shard.yml`:
@@ -46,7 +50,7 @@ metrics.put_metric_data("MyApp", [
 ])
 ```
 
-Calls return `nil` on success and raise `Awscr::CloudWatch::Exception` when AWS
+Calls return `nil` on success and raise `Awscr::CloudWatch::ApiException` when AWS
 rejects the request. Throttling, 5xx responses and connection errors are
 retried with exponential backoff (`max_attempts: 3` by default).
 

@@ -18,7 +18,7 @@ describe "resource usage" do
       2000.times { client.put_counter("MyApp", "Requests", dimensions: {"Env" => "test"}) }
       200.times do
         server.reply(CW::Spec.fixture("error_invalid_value"), 400)
-        expect_raises(CW::Exception) { client.put_counter("MyApp", "Requests") }
+        expect_raises(CW::ApiException) { client.put_counter("MyApp", "Requests") }
       end
       200.times do
         server.reply(CW::Spec.fixture("list_metrics"))

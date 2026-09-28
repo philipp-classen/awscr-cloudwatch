@@ -58,7 +58,7 @@ describe "parallelism" do
         40.times do |i|
           namespace = "ns-#{w}-#{i}"
           client.list_metrics(namespace: namespace).metrics.map(&.namespace).should eq [namespace] * 4
-          ex = expect_raises(CW::Exception) { client.list_metrics(namespace: "#{namespace}-bad") }
+          ex = expect_raises(CW::ApiException) { client.list_metrics(namespace: "#{namespace}-bad") }
           ex.message.should eq "InvalidParameterValue: Bad #{namespace}-bad for parameter MetricData.member.1.Value is invalid."
         end
       end
@@ -70,7 +70,7 @@ describe "parallelism" do
       300.times do |i|
         CW::XML.new(CW::Spec.fixture("describe_alarms")).string("DescribeAlarmsResponse/DescribeAlarmsResult/MetricAlarms/member/AlarmName").should eq "test-awscr-20260915-alarm"
         CW::XML.new("<a><b>#{w}-#{i}</b></a>").string("a/b").should eq "#{w}-#{i}"
-        expect_raises(CW::Exception, "Invalid XML") { CW::XML.new("") }
+        expect_raises(CW::ApiException, "Invalid XML") { CW::XML.new("") }
       end
     end
   end

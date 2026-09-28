@@ -18,7 +18,7 @@ describe CW::Http do
   it "is rejected by the fake server when the signature is wrong" do
     CW::Spec.with_fake_server do |server|
       client = CW::MetricClient.new("us-east-1", "key", "wrong", endpoint: server.endpoint, max_attempts: 1)
-      ex = expect_raises(CW::Exception, "SignatureDoesNotMatch") { client.list_metrics }
+      ex = expect_raises(CW::ApiException, "SignatureDoesNotMatch") { client.list_metrics }
       ex.status.should eq HTTP::Status::FORBIDDEN
     end
   end
@@ -34,7 +34,7 @@ describe CW::Http do
   it "raises with code, message, request id and status for client errors" do
     CW::Spec.with_fake_server do |server|
       server.reply(CW::Spec.fixture("error_invalid_value"), 400)
-      ex = expect_raises(CW::Exception, "InvalidParameterValue: The value NaN for parameter MetricData.member.1.Value is invalid.") do
+      ex = expect_raises(CW::ApiException, "InvalidParameterValue: The value NaN for parameter MetricData.member.1.Value is invalid.") do
         CW::Spec.metric_client(server).list_metrics
       end
       ex.code.should eq "InvalidParameterValue"
@@ -48,7 +48,7 @@ describe CW::Http do
   it "handles error responses without a message" do
     CW::Spec.with_fake_server do |server|
       server.reply(CW::Spec.fixture("error_not_found"), 404)
-      ex = expect_raises(CW::Exception, "ResourceNotFound") { CW::Spec.metric_client(server).list_metrics }
+      ex = expect_raises(CW::ApiException, "ResourceNotFound") { CW::Spec.metric_client(server).list_metrics }
       ex.code.should eq "ResourceNotFound"
       ex.status.should eq HTTP::Status::NOT_FOUND
     end
@@ -74,7 +74,7 @@ describe CW::Http do
   it "parses errors from the generic AWS fault namespace" do
     CW::Spec.with_fake_server do |server|
       server.reply(CW::Spec.fixture("error_invalid_action"), 400)
-      ex = expect_raises(CW::Exception, "InvalidAction: Could not find operation NoSuchAction for version 2010-08-01") do
+      ex = expect_raises(CW::ApiException, "InvalidAction: Could not find operation NoSuchAction for version 2010-08-01") do
         CW::Spec.metric_client(server).list_metrics
       end
       ex.request_id.should eq "bfd984dd-6a89-4ab3-a3cc-4ecf47228768"
@@ -115,7 +115,7 @@ describe CW::Http do
   it "does not follow redirects" do
     CW::Spec.with_fake_server do |server|
       server.reply("", 301)
-      ex = expect_raises(CW::Exception, "HTTP 301 Moved Permanently") { CW::Spec.metric_client(server).list_metrics }
+      ex = expect_raises(CW::ApiException, "HTTP 301 Moved Permanently") { CW::Spec.metric_client(server).list_metrics }
       ex.retryable?.should be_false
       server.requests.size.should eq 1
     end
@@ -126,7 +126,7 @@ describe CW::Http do
       server.reply("<html>Bad Gateway</html>", 502)
       server.reply("Bad Gateway", 502)
       server.reply("", 502)
-      ex = expect_raises(CW::Exception, "HTTP 502") { CW::Spec.metric_client(server).list_metrics }
+      ex = expect_raises(CW::ApiException, "HTTP 502") { CW::Spec.metric_client(server).list_metrics }
       ex.code.should be_nil
       ex.status.should eq HTTP::Status::BAD_GATEWAY
     end
@@ -155,15 +155,15 @@ describe CW::Http do
   it "gives up after max_attempts" do
     CW::Spec.with_fake_server do |server|
       3.times { server.reply("", 503) }
-      expect_raises(CW::Exception, "HTTP 503") { CW::Spec.metric_client(server).list_metrics }
+      expect_raises(CW::ApiException, "HTTP 503") { CW::Spec.metric_client(server).list_metrics }
       server.requests.size.should eq 3
 
       server.reply("", 503)
       server.reply("", 503)
-      expect_raises(CW::Exception, "HTTP 503") { CW::Spec.metric_client(server, max_attempts: 1).list_metrics }
+      expect_raises(CW::ApiException, "HTTP 503") { CW::Spec.metric_client(server, max_attempts: 1).list_metrics }
       server.requests.size.should eq 4
 
-      expect_raises(CW::Exception, "HTTP 503") { CW::Spec.metric_client(server, max_attempts: 0).list_metrics }
+      expect_raises(CW::ApiException, "HTTP 503") { CW::Spec.metric_client(server, max_attempts: 0).list_metrics }
       server.requests.size.should eq 5
     end
   end
@@ -187,14 +187,14 @@ describe CW::Http do
 
   it "raises when a 2xx body is empty" do
     CW::Spec.with_fake_server do |server|
-      expect_raises(CW::Exception, "Invalid XML") { CW::Spec.metric_client(server).list_metrics }
+      expect_raises(CW::ApiException, "Invalid XML") { CW::Spec.metric_client(server).list_metrics }
     end
   end
 
   it "raises when a 2xx body is not the expected document" do
     CW::Spec.with_fake_server do |server|
       server.reply("<html>proxy</html>")
-      expect_raises(CW::Exception, "Missing element: ListMetricsResponse/ListMetricsResult") do
+      expect_raises(CW::ApiException, "Missing element: ListMetricsResponse/ListMetricsResult") do
         CW::Spec.metric_client(server).list_metrics
       end
     end
@@ -232,14 +232,14 @@ describe CW::Http do
   end
 end
 
-describe CW::Exception do
+describe CW::ApiException do
   it "knows which errors are transient" do
-    CW::Exception.new("x", HTTP::Status::BAD_REQUEST, "Throttling").retryable?.should be_true
-    CW::Exception.new("x", HTTP::Status::BAD_REQUEST, "ThrottlingException").retryable?.should be_true
-    CW::Exception.new("x", HTTP::Status::TOO_MANY_REQUESTS).retryable?.should be_true
-    CW::Exception.new("x", HTTP::Status::SERVICE_UNAVAILABLE).retryable?.should be_true
-    CW::Exception.new("x", HTTP::Status::BAD_REQUEST, "InvalidParameterValue").retryable?.should be_false
-    CW::Exception.new("x", HTTP::Status::FORBIDDEN, "InvalidClientTokenId").retryable?.should be_false
+    CW::ApiException.new("x", HTTP::Status::BAD_REQUEST, "Throttling").retryable?.should be_true
+    CW::ApiException.new("x", HTTP::Status::BAD_REQUEST, "ThrottlingException").retryable?.should be_true
+    CW::ApiException.new("x", HTTP::Status::TOO_MANY_REQUESTS).retryable?.should be_true
+    CW::ApiException.new("x", HTTP::Status::SERVICE_UNAVAILABLE).retryable?.should be_true
+    CW::ApiException.new("x", HTTP::Status::BAD_REQUEST, "InvalidParameterValue").retryable?.should be_false
+    CW::ApiException.new("x", HTTP::Status::FORBIDDEN, "InvalidClientTokenId").retryable?.should be_false
   end
 end
 

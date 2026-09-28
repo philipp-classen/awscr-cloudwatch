@@ -90,21 +90,21 @@ if CW::Spec.integration?
     end
 
     it "raises AWS errors" do
-      ex = expect_raises(CW::Exception, "MissingParameter") { client.put_metric_data(namespace, [] of CW::MetricDatum) }
+      ex = expect_raises(CW::ApiException, "MissingParameter") { client.put_metric_data(namespace, [] of CW::MetricDatum) }
       ex.code.should eq "MissingParameter"
       ex.status.should eq HTTP::Status::BAD_REQUEST
       ex.request_id.should_not be_nil
 
       too_many = (1..1001).map { |i| CW::MetricDatum.counter("Metric#{i}") }
-      expect_raises(CW::Exception, "InvalidParameterValue: The collection MetricData must not have a size greater than 1000.") do
+      expect_raises(CW::ApiException, "InvalidParameterValue: The collection MetricData must not have a size greater than 1000.") do
         client.put_metric_data(namespace, too_many)
       end
 
       both = [CW::MetricDatum.new("Requests", 1, values: [1.0], dimensions: dims)]
-      expect_raises(CW::Exception, "InvalidParameterCombination") { client.put_metric_data(namespace, both) }
+      expect_raises(CW::ApiException, "InvalidParameterCombination") { client.put_metric_data(namespace, both) }
 
       wrong_secret = CW::MetricClient.new(client.region, ENV["AWS_ACCESS_KEY_ID"], "wrong", endpoint: ENV["AWS_ENDPOINT_URL"]?)
-      ex = expect_raises(CW::Exception, "SignatureDoesNotMatch") { wrong_secret.list_metrics(namespace: namespace) }
+      ex = expect_raises(CW::ApiException, "SignatureDoesNotMatch") { wrong_secret.list_metrics(namespace: namespace) }
       ex.status.should eq HTTP::Status::FORBIDDEN
       ex.retryable?.should be_false
     end

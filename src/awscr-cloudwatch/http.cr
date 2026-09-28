@@ -17,7 +17,10 @@ module Awscr::CloudWatch
     # Sends *params* as a form-encoded POST.
     #
     # 5xx, throttling and connection errors are retried with exponential
-    # backoff. Anything else raises `Exception`.
+    # backoff. Anything else raises `ApiException`.
+    #
+    # A client whose request failed mid-flight is closed instead of handed
+    # back to the factory, so that the next attempt opens a fresh connection.
     def post(params : Hash(String, String)) : HTTP::Client::Response
       body = URI::Params.encode(params)
       attempt = 0
@@ -25,19 +28,28 @@ module Awscr::CloudWatch
       loop do
         attempt += 1
         client = @factory.acquire_client(@endpoint)
+        resp = nil
 
         begin
           resp = client.exec(signed_request(body))
-          return resp if resp.success?
-
-          error = Exception.from_response(resp)
-          raise error unless error.retryable? && attempt < @max_attempts
-          Log.debug &.emit("Retrying failed request", attempt: attempt, status: resp.status_code, code: error.code)
-        rescue ex : IO::Error | OpenSSL::SSL::Error
+        rescue ex : Exception
+          # The request did not complete, so the connection state is unknown.
+          # Close the client instead of handing it back. The next attempt will
+          # open a fresh connection.
+          client.close
+          client = nil
           raise ex unless attempt < @max_attempts
           Log.debug exception: ex, &.emit("Retrying after connection error", attempt: attempt)
         ensure
           @factory.release(client)
+        end
+
+        if resp
+          return resp if resp.success?
+
+          error = ApiException.from_response(resp)
+          raise error unless error.retryable? && attempt < @max_attempts
+          Log.debug &.emit("Retrying failed request", attempt: attempt, status: resp.status_code, code: error.code)
         end
 
         sleep backoff(attempt)

@@ -5,7 +5,7 @@ module Awscr::CloudWatch
   #
   # `code` is the AWS error code (e.g. `InvalidParameterValue`, `Throttling`),
   # `request_id` helps AWS support to trace a request.
-  class Exception < ::Exception
+  class ApiException < ::Exception
     getter status : HTTP::Status
     getter code : String?
     getter request_id : String?
@@ -17,7 +17,7 @@ module Awscr::CloudWatch
       super(message)
     end
 
-    def self.from_response(response : HTTP::Client::Response) : Exception
+    def self.from_response(response : HTTP::Client::Response) : ApiException
       code = message = request_id = nil
 
       if body = response.body.presence
@@ -36,7 +36,7 @@ module Awscr::CloudWatch
       else
         new(text, response.status, code, request_id)
       end
-    rescue Awscr::CloudWatch::Exception # unparsable body
+    rescue ApiException # unparsable body
       new("HTTP #{response.status_code}: #{response.body}", response.status)
     end
 
@@ -48,6 +48,6 @@ module Awscr::CloudWatch
 
   # The session token of the request has expired: refresh the credentials
   # and send the request again.
-  class ExpiredTokenException < Exception
+  class ExpiredTokenException < ApiException
   end
 end
