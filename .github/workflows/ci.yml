@@ -1,0 +1,36 @@
+name: Crystal CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-ubuntu:
+    strategy:
+      fail-fast: false
+      matrix:
+        crystal: [latest, nightly]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: ${{ matrix.crystal }}
+
+      - name: Download source
+        uses: actions/checkout@v4
+
+      - name: Check code formatting
+        run: crystal tool format --check
+
+      - name: Install dependencies
+        run: shards install
+
+      - name: Lint with Ameba
+        run: crystal run lib/ameba/bin/ameba.cr
+
+      - name: Run specs
+        run: crystal spec --verbose --order random
