@@ -109,7 +109,7 @@ client = Awscr::CloudWatch::Client.new("us-east-1", "key", "secret", client_fact
 
 ```
 crystal spec
-bin/ameba
+crystal run lib/ameba/bin/ameba.cr
 ```
 
 Integration specs only run with `AWSCR_CLOUDWATCH_INTEGRATION=1`. Against a

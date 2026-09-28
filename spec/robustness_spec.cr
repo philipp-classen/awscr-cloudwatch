@@ -18,7 +18,7 @@ private class PoolLikeFactory < CW::HttpClientFactory
       return client
     end
     @created += 1
-    DiesWhileIdle.new(endpoint.host.not_nil!, endpoint.port)
+    DiesWhileIdle.new(endpoint.host || "127.0.0.1", endpoint.port)
   end
 
   def release(client : HTTP::Client?)
