@@ -23,7 +23,7 @@ if CW::Spec.integration?
 
       stats = ->(metric : String, statistics : Array(String), extended : Array(String)?) do
         client.get_metric_statistics(namespace, metric,
-          start_time: start_time, end_time: Time.utc + 1.minute, period: 300,
+          start_time: start_time, end_time: Time.utc + 1.minute, period: 5.minutes,
           statistics: statistics, extended_statistics: extended, dimensions: dims)
       end
 
@@ -58,9 +58,14 @@ if CW::Spec.integration?
       CW::Spec.eventually { stats.call("Extreme", ["Sum"], nil).datapoints.sum { |d| d.sum || 0.0 } == 1e20 }
       CW::Spec.eventually { stats.call("Tiny", ["Sum"], nil).datapoints.sum { |d| d.sum || 0.0 } == 1e-7 }
       CW::Spec.eventually { stats.call("HighRes", ["Sum"], nil).datapoints.sum { |d| d.sum || 0.0 } == 1.0 }
+      # High-resolution metrics can be read with periods below one minute. The sample comes back in a 10 second bucket.
+      CW::Spec.eventually do
+        client.get_metric_statistics(namespace, "HighRes", start_time: start_time, end_time: Time.utc + 1.minute,
+          period: 10.seconds, statistics: ["Sum"], dimensions: dims).datapoints.sum { |d| d.sum || 0.0 } == 1.0
+      end
 
       queries = [
-        CW::MetricDataQuery.new("requests", metric_stat: CW::MetricStat.new(CW::Metric.new(namespace, "Requests", dims), 300, "Sum")),
+        CW::MetricDataQuery.new("requests", metric_stat: CW::MetricStat.new(CW::Metric.new(namespace, "Requests", dims), 5.minutes, "Sum")),
         CW::MetricDataQuery.new("doubled", expression: "requests * 2", label: "Doubled"),
       ]
       data = client.get_metric_data(queries, start_time: start_time, end_time: Time.utc + 1.minute)
@@ -84,7 +89,7 @@ if CW::Spec.integration?
 
       CW::Spec.eventually do
         stats = client.get_metric_statistics(namespace, "Special Chars",
-          start_time: start_time, end_time: Time.utc + 1.minute, period: 300, statistics: ["Sum"], dimensions: special_dims)
+          start_time: start_time, end_time: Time.utc + 1.minute, period: 5.minutes, statistics: ["Sum"], dimensions: special_dims)
         stats.datapoints.sum { |d| d.sum || 0.0 } == 7.0
       end
     end

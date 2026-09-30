@@ -92,7 +92,7 @@ describe "response parsing under fuzzing" do
   now = Time.utc
   calls = {
     "list_metrics"               => ->(c : CW::Client) { c.metrics.list_metrics; nil },
-    "get_metric_statistics"      => ->(c : CW::Client) { c.metrics.get_metric_statistics("n", "m", start_time: now, end_time: now, period: 60); nil },
+    "get_metric_statistics"      => ->(c : CW::Client) { c.metrics.get_metric_statistics("n", "m", start_time: now, end_time: now, period: 1.minute); nil },
     "get_metric_data_values"     => ->(c : CW::Client) { c.metrics.get_metric_data([] of CW::MetricDataQuery, start_time: now, end_time: now); nil },
     "describe_alarms"            => ->(c : CW::Client) { c.alarms.describe_alarms; nil },
     "describe_math_alarm"        => ->(c : CW::Client) { c.alarms.describe_alarms; nil },

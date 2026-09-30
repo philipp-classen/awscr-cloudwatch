@@ -9,7 +9,7 @@ if CW::Spec.integration?
 
     sum_of = ->(metric : String, start_time : Time) do
       stats = client.get_metric_statistics(namespace, metric, dimensions: dims,
-        start_time: start_time, end_time: Time.utc + 1.minute, period: 300, statistics: ["Sum", "SampleCount"])
+        start_time: start_time, end_time: Time.utc + 1.minute, period: 5.minutes, statistics: ["Sum", "SampleCount"])
       {stats.datapoints.sum { |d| d.sum || 0.0 }, stats.datapoints.sum { |d| d.sample_count || 0.0 }}
     end
 

@@ -145,7 +145,7 @@ describe CW::MetricClient do
       with_metric_client do |client, server|
         server.reply(CW::Spec.fixture("get_metric_statistics"))
         result = client.get_metric_statistics("MyApp", "Requests",
-          start_time: Time.utc(2026, 9, 15, 18, 0, 0), end_time: Time.utc(2026, 9, 15, 19, 0, 0), period: 300,
+          start_time: Time.utc(2026, 9, 15, 18, 0, 0), end_time: Time.utc(2026, 9, 15, 19, 0, 0), period: 5.minutes,
           statistics: ["Sum", "SampleCount"], dimensions: {"Env" => "test"}, unit: "Count")
 
         server.last_request.params.should eq CW::Spec.params("GetMetricStatistics", {
@@ -178,7 +178,7 @@ describe CW::MetricClient do
       with_metric_client do |client, server|
         server.reply(CW::Spec.fixture("get_metric_statistics_percentiles"))
         result = client.get_metric_statistics("MyApp", "Latency",
-          start_time: Time.utc(2026, 9, 15, 18, 0, 0), end_time: Time.utc(2026, 9, 15, 19, 0, 0), period: 300,
+          start_time: Time.utc(2026, 9, 15, 18, 0, 0), end_time: Time.utc(2026, 9, 15, 19, 0, 0), period: 5.minutes,
           extended_statistics: ["p50", "p99"])
 
         server.last_request.params["ExtendedStatistics.member.2"].should eq "p99"
@@ -196,8 +196,8 @@ describe CW::MetricClient do
         server.reply(CW::Spec.fixture("get_metric_data_values"))
         queries = [
           CW::MetricDataQuery.new("m1", return_data: false,
-            metric_stat: CW::MetricStat.new(CW::Metric.new("MyApp", "Requests", {"Env" => "test"}), 300, "Sum", unit: "Count")),
-          CW::MetricDataQuery.new("e1", expression: "m1 * 2", label: "Doubled", period: 300, account_id: "123456789012"),
+            metric_stat: CW::MetricStat.new(CW::Metric.new("MyApp", "Requests", {"Env" => "test"}), 5.minutes, "Sum", unit: "Count")),
+          CW::MetricDataQuery.new("e1", expression: "m1 * 2", label: "Doubled", period: 5.minutes, account_id: "123456789012"),
         ]
         result = client.get_metric_data(queries,
           start_time: Time.utc(2026, 9, 15, 18, 0, 0), end_time: Time.utc(2026, 9, 15, 19, 0, 0),

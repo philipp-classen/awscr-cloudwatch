@@ -11,7 +11,7 @@ describe CW::AlarmClient do
     it "serializes an alarm on a single metric" do
       with_alarm_client do |client, server|
         client.put_metric_alarm("HighErrors",
-          namespace: "MyApp", metric_name: "Errors", statistic: "Sum", period: 60, unit: "Count",
+          namespace: "MyApp", metric_name: "Errors", statistic: "Sum", period: 1.minute, unit: "Count",
           dimensions: {"Env" => "prod"}, evaluation_periods: 3, datapoints_to_alarm: 2,
           threshold: 100, comparison_operator: "GreaterThanThreshold", treat_missing_data: "notBreaching",
           alarm_description: "too many errors", actions_enabled: true,
@@ -47,7 +47,7 @@ describe CW::AlarmClient do
       with_alarm_client do |client, server|
         client.put_metric_alarm("ErrorRate",
           metrics: [
-            CW::MetricDataQuery.new("errors", metric_stat: CW::MetricStat.new(CW::Metric.new("MyApp", "Errors"), 60, "Sum"), return_data: false),
+            CW::MetricDataQuery.new("errors", metric_stat: CW::MetricStat.new(CW::Metric.new("MyApp", "Errors"), 1.minute, "Sum"), return_data: false),
             CW::MetricDataQuery.new("rate", expression: "errors / 100", return_data: true),
           ],
           evaluation_periods: 1, threshold: 0.5, comparison_operator: "GreaterThanThreshold")
@@ -133,7 +133,7 @@ describe CW::AlarmClient do
         alarm.statistic.should eq "Sum"
         alarm.extended_statistic.should be_nil
         alarm.dimensions.should eq({"Env" => "test"})
-        alarm.period.should eq 60
+        alarm.period.should eq 1.minute
         alarm.unit.should eq "Count"
         alarm.evaluation_periods.should eq 2
         alarm.datapoints_to_alarm.should eq 1
@@ -180,12 +180,12 @@ describe CW::AlarmClient do
         errors.expression.should be_nil
         stat = errors.metric_stat.should_not be_nil
         stat.metric.should eq CW::Metric.new("test-awscr-20260915", "Errors", {"Env" => "test"})
-        stat.period.should eq 60
+        stat.period.should eq 1.minute
         stat.stat.should eq "Sum"
         stat.unit.should eq "Count"
 
         requests = alarm.metrics[1]
-        requests.metric_stat.should eq CW::MetricStat.new(CW::Metric.new("test-awscr-20260915", "Requests"), 60, "Sum")
+        requests.metric_stat.should eq CW::MetricStat.new(CW::Metric.new("test-awscr-20260915", "Requests"), 1.minute, "Sum")
 
         rate = alarm.metrics[2]
         rate.metric_stat.should be_nil
@@ -220,7 +220,7 @@ describe CW::AlarmClient do
       with_alarm_client do |client, server|
         server.reply(CW::Spec.fixture("describe_alarms_for_metric"))
         result = client.describe_alarms_for_metric("MyApp", "Requests", statistic: "Sum", extended_statistic: "p99",
-          dimensions: {"Env" => "test"}, period: 60, unit: "Count")
+          dimensions: {"Env" => "test"}, period: 1.minute, unit: "Count")
 
         server.last_request.params.should eq CW::Spec.params("DescribeAlarmsForMetric", {
           "Namespace"                 => "MyApp",

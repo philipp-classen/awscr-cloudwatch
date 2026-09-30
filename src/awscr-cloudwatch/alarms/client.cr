@@ -7,7 +7,7 @@ module Awscr::CloudWatch
   # ```
   # client = AlarmClient.new("us-east-1", "key", "secret")
   # client.put_metric_alarm("HighErrorRate",
-  #   namespace: "MyApp", metric_name: "Errors", statistic: "Sum", period: 60,
+  #   namespace: "MyApp", metric_name: "Errors", statistic: "Sum", period: 1.minute,
   #   evaluation_periods: 3, threshold: 100, comparison_operator: "GreaterThanThreshold",
   #   alarm_actions: ["arn:aws:sns:us-east-1:123456789012:oncall"])
   # ```
@@ -20,7 +20,7 @@ module Awscr::CloudWatch
                          threshold : Number? = nil,
                          namespace : String? = nil, metric_name : String? = nil,
                          statistic : String? = nil, extended_statistic : String? = nil,
-                         period : Int32? = nil, dimensions : Hash(String, String)? = nil,
+                         period : Time::Span? = nil, dimensions : Hash(String, String)? = nil,
                          unit : String? = nil, metrics : Array(MetricDataQuery)? = nil,
                          threshold_metric_id : String? = nil,
                          datapoints_to_alarm : Int32? = nil, treat_missing_data : String? = nil,
@@ -38,7 +38,7 @@ module Awscr::CloudWatch
         .add("MetricName", metric_name)
         .add("Statistic", statistic)
         .add("ExtendedStatistic", extended_statistic)
-        .add("Period", period)
+        .add("Period", Period.seconds(period))
         .add_pairs("Dimensions", dimensions)
         .add("Unit", unit)
         .add_structs("Metrics", metrics)
@@ -95,14 +95,14 @@ module Awscr::CloudWatch
     def describe_alarms_for_metric(namespace : String, metric_name : String, *,
                                    statistic : String? = nil, extended_statistic : String? = nil,
                                    dimensions : Hash(String, String)? = nil,
-                                   period : Int32? = nil, unit : String? = nil) : Response::DescribeAlarmsForMetricOutput
+                                   period : Time::Span? = nil, unit : String? = nil) : Response::DescribeAlarmsForMetricOutput
       query Response::DescribeAlarmsForMetricOutput, Params.new("DescribeAlarmsForMetric")
         .add("Namespace", namespace)
         .add("MetricName", metric_name)
         .add("Statistic", statistic)
         .add("ExtendedStatistic", extended_statistic)
         .add_pairs("Dimensions", dimensions)
-        .add("Period", period)
+        .add("Period", Period.seconds(period))
         .add("Unit", unit)
     end
 

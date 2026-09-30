@@ -7,7 +7,7 @@ module Awscr::CloudWatch
     getter expression : String?
     getter label : String?
     getter return_data : Bool?
-    getter period : Int32?
+    getter period : Time::Span?
     getter account_id : String?
 
     def initialize(
@@ -17,9 +17,10 @@ module Awscr::CloudWatch
       @expression : String? = nil,
       @label : String? = nil,
       @return_data : Bool? = nil,
-      @period : Int32? = nil,
+      @period : Time::Span? = nil,
       @account_id : String? = nil,
     )
+      Period.validate(@period)
     end
 
     # :nodoc:
@@ -30,7 +31,7 @@ module Awscr::CloudWatch
         expression: node.string?("Expression"),
         label: node.string?("Label"),
         return_data: node.bool?("ReturnData"),
-        period: node.int?("Period"),
+        period: node.int?("Period").try(&.seconds),
         account_id: node.string?("AccountId"),
       )
     end
@@ -41,7 +42,7 @@ module Awscr::CloudWatch
         .add("#{prefix}.Expression", expression)
         .add("#{prefix}.Label", label)
         .add("#{prefix}.ReturnData", return_data)
-        .add("#{prefix}.Period", period)
+        .add("#{prefix}.Period", Period.seconds(period))
         .add("#{prefix}.AccountId", account_id)
       metric_stat.try &.add_to(params, "#{prefix}.MetricStat")
     end

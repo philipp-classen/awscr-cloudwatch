@@ -58,13 +58,13 @@ retried with exponential backoff (`max_attempts: 3` by default).
 
 ```crystal
 stats = metrics.get_metric_statistics("MyApp", "Requests",
-  start_time: Time.utc - 1.hour, end_time: Time.utc, period: 300,
+  start_time: Time.utc - 1.hour, end_time: Time.utc, period: 5.minutes,
   statistics: ["Sum"], dimensions: {"Env" => "prod"})
 stats.datapoints.each { |dp| puts "#{dp.timestamp}: #{dp.sum}" }
 
 data = metrics.get_metric_data([
   Awscr::CloudWatch::MetricDataQuery.new("requests",
-    metric_stat: Awscr::CloudWatch::MetricStat.new(Awscr::CloudWatch::Metric.new("MyApp", "Requests"), 300, "Sum")),
+    metric_stat: Awscr::CloudWatch::MetricStat.new(Awscr::CloudWatch::Metric.new("MyApp", "Requests"), 5.minutes, "Sum")),
   Awscr::CloudWatch::MetricDataQuery.new("per_second", expression: "requests / 300"),
 ], start_time: Time.utc - 1.hour, end_time: Time.utc)
 data.metric_data_results.each { |r| puts "#{r.id}: #{r.values}" }
@@ -72,13 +72,16 @@ data.metric_data_results.each { |r| puts "#{r.id}: #{r.values}" }
 metrics.list_metrics(namespace: "MyApp").metrics.each { |m| puts m.metric_name }
 ```
 
+Periods are `Time::Span`s. CloudWatch accepts multiples of one minute, plus 1, 5, 10, 20 and 30 seconds for high-resolution metrics.
+Anything else raises `ArgumentError` before a request is sent.
+
 ### Alarms
 
 ```crystal
 alarms = client.alarms
 
 alarms.put_metric_alarm("MyApp-HighErrorRate",
-  namespace: "MyApp", metric_name: "Errors", statistic: "Sum", period: 60,
+  namespace: "MyApp", metric_name: "Errors", statistic: "Sum", period: 1.minute,
   evaluation_periods: 3, threshold: 100, comparison_operator: "GreaterThanThreshold",
   alarm_actions: ["arn:aws:sns:us-east-1:123456789012:oncall"])
 

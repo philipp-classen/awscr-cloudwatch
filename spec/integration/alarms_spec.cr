@@ -11,7 +11,7 @@ if CW::Spec.integration?
     it "manages metric and composite alarms" do
       begin
         client.put_metric_alarm(alarm_name,
-          namespace: prefix, metric_name: "Requests", dimensions: {"Env" => "test"}, statistic: "Sum", period: 60, unit: "Count",
+          namespace: prefix, metric_name: "Requests", dimensions: {"Env" => "test"}, statistic: "Sum", period: 1.minute, unit: "Count",
           evaluation_periods: 2, datapoints_to_alarm: 1, threshold: 100.5, comparison_operator: "GreaterThanThreshold",
           treat_missing_data: "notBreaching", actions_enabled: false,
           alarm_description: "created by awscr-cloudwatch specs", tags: {"team" => "awscr"})
@@ -23,17 +23,17 @@ if CW::Spec.integration?
         # Descriptions may contain anything; tags and names are ASCII only.
         description = "Ünïcödé ✓ <tag> & \"quote\"\nsecond line\ttab"
         client.put_metric_alarm(alarm_name, alarm_description: description,
-          namespace: prefix, metric_name: "Requests", statistic: "Sum", period: 60, actions_enabled: false,
+          namespace: prefix, metric_name: "Requests", statistic: "Sum", period: 1.minute, actions_enabled: false,
           evaluation_periods: 2, threshold: 100.5, comparison_operator: "GreaterThanThreshold", dimensions: {"Env" => "test"})
         client.describe_alarms(alarm_names: [alarm_name]).metric_alarms.first.alarm_description.should eq description
         client.put_metric_alarm(alarm_name, alarm_description: "created by awscr-cloudwatch specs",
-          namespace: prefix, metric_name: "Requests", statistic: "Sum", period: 60, unit: "Count", actions_enabled: false,
+          namespace: prefix, metric_name: "Requests", statistic: "Sum", period: 1.minute, unit: "Count", actions_enabled: false,
           evaluation_periods: 2, datapoints_to_alarm: 1, threshold: 100.5, comparison_operator: "GreaterThanThreshold",
           dimensions: {"Env" => "test"}, treat_missing_data: "notBreaching")
         alarm.namespace.should eq prefix
         alarm.dimensions.should eq({"Env" => "test"})
         alarm.statistic.should eq "Sum"
-        alarm.period.should eq 60
+        alarm.period.should eq 1.minute
         alarm.evaluation_periods.should eq 2
         alarm.datapoints_to_alarm.should eq 1
         alarm.threshold.should eq 100.5
@@ -82,19 +82,19 @@ if CW::Spec.integration?
           evaluation_periods: 1, threshold: 0.5, comparison_operator: "GreaterThanThreshold",
           metrics: [
             CW::MetricDataQuery.new("errors", return_data: false,
-              metric_stat: CW::MetricStat.new(CW::Metric.new(prefix, "Errors", {"Env" => "test"}), 60, "Sum", unit: "Count")),
+              metric_stat: CW::MetricStat.new(CW::Metric.new(prefix, "Errors", {"Env" => "test"}), 1.minute, "Sum", unit: "Count")),
             CW::MetricDataQuery.new("requests", return_data: false,
-              metric_stat: CW::MetricStat.new(CW::Metric.new(prefix, "Requests"), 60, "Sum")),
+              metric_stat: CW::MetricStat.new(CW::Metric.new(prefix, "Requests"), 1.minute, "Sum")),
             CW::MetricDataQuery.new("rate", expression: "errors / requests", label: "Error rate", return_data: true),
           ])
         client.put_metric_alarm(names[1], actions_enabled: false,
-          namespace: prefix, metric_name: "Requests", statistic: "Sum", period: 60,
+          namespace: prefix, metric_name: "Requests", statistic: "Sum", period: 1.minute,
           evaluation_periods: 1, threshold: 1, comparison_operator: "GreaterThanThreshold")
 
         alarm = client.describe_alarms(alarm_names: [names[0]]).metric_alarms.first
         alarm.metric_name.should be_nil
         alarm.metrics.map(&.id).should eq ["errors", "requests", "rate"]
-        alarm.metrics[0].metric_stat.should eq CW::MetricStat.new(CW::Metric.new(prefix, "Errors", {"Env" => "test"}), 60, "Sum", unit: "Count")
+        alarm.metrics[0].metric_stat.should eq CW::MetricStat.new(CW::Metric.new(prefix, "Errors", {"Env" => "test"}), 1.minute, "Sum", unit: "Count")
         alarm.metrics[2].expression.should eq "errors / requests"
         alarm.metrics[2].label.should eq "Error rate"
         alarm.metrics[2].return_data.should be_true

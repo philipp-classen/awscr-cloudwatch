@@ -39,11 +39,11 @@ module Awscr::CloudWatch
         .add("NextToken", next_token)
     end
 
-    # Aggregates one metric over *period* seconds. *statistics* are
+    # Aggregates one metric per *period*, e.g. `5.minutes`. *statistics* are
     # `SampleCount`, `Average`, `Sum`, `Minimum`, `Maximum`; *extended_statistics*
     # are percentiles like `p99`. Returns at most 1440 data points.
     def get_metric_statistics(namespace : String, metric_name : String, *,
-                              start_time : Time, end_time : Time, period : Int32,
+                              start_time : Time, end_time : Time, period : Time::Span,
                               statistics : Array(String)? = nil,
                               extended_statistics : Array(String)? = nil,
                               dimensions : Hash(String, String)? = nil,
@@ -53,7 +53,7 @@ module Awscr::CloudWatch
         .add("MetricName", metric_name)
         .add("StartTime", start_time)
         .add("EndTime", end_time)
-        .add("Period", period)
+        .add("Period", Period.seconds(period))
         .add_list("Statistics", statistics)
         .add_list("ExtendedStatistics", extended_statistics)
         .add_pairs("Dimensions", dimensions)
