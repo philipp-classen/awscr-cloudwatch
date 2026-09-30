@@ -1,5 +1,5 @@
 name: awscr-cloudwatch
-version: 0.1.0
+version: 1.0.0
 description: Low-level client for AWS CloudWatch metrics and alarms
 
 authors:
