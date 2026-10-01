@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Update apt cache
+        run: sudo apt-get update
+
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
         with:
